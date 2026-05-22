@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>AMO Business Factory</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0f;--s1:#111118;--s2:#1a1a24;--bd:#2a2a3a;--grn:#7fff6e;--blu:#6e8fff;--pnk:#ff6e9b;--yel:#ffd700;--tx:#e8e8f0;--mu:#6b6b80;--fh:'Syne',sans-serif;--fm:'DM Mono',monospace}
+body{background:var(--bg);color:var(--tx);font-family:var(--fh);min-height:100vh;-webkit-tap-highlight-color:transparent}
+.app{max-width:480px;margin:0 auto;padding:0 0 80px}
+.hdr{padding:22px 20px 14px;border-bottom:1px solid var(--bd)}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(127,255,110,.1);border:1px solid rgba(127,255,110,.3);border-radius:6px;padding:3px 9px;font-size:10px;color:var(--grn);font-family:var(--fm);letter-spacing:1px;margin-bottom:8px}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--grn);animation:pulse 2s infinite;display:inline-block}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-size:22px;font-weight:800;line-height:1.1}
+h1 span{color:var(--grn)}
+.sub{font-size:11px;color:var(--mu);margin-top:4px;font-family:var(--fm)}
+
+/* MAIN TABS */
+.mtabs{display:flex;gap:0;padding:16px 20px 0;border-bottom:1px solid var(--bd)}
+.mtab{flex:1;padding:10px 8px;font-size:13px;font-weight:700;cursor:pointer;text-align:center;
+  border:1px solid var(--bd);color:var(--mu);background:var(--s1);transition:all .2s;font-family:var(--fh)}
+.mtab:first-child{border-radius:8px 0 0 8px}
+.mtab:last-child{border-radius:0 8px 8px 0;border-left:none}
+.mtab.on{background:var(--grn);color:#0a0a0f;border-color:var(--grn)}
+
+/* KEY SECTION */
+.ksec{padding:14px 20px;border-bottom:1px solid var(--bd)}
+.lbl{font-size:10px;color:var(--mu);font-family:var(--fm);letter-spacing:1px;margin-bottom:5px}
+.kinfo{font-size:11px;color:var(--mu);font-family:var(--fm);line-height:1.6;background:var(--s2);border-radius:8px;padding:9px 11px;margin-bottom:8px}
+.kinfo a{color:var(--grn);text-decoration:none}
+.krow{display:flex;gap:8px}
+.kinp{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:11px 12px;color:var(--tx);font-family:var(--fm);font-size:12px;outline:none}
+.kinp:focus{border-color:var(--grn)}
+.kinp::placeholder{color:var(--mu)}
+.kbtn{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:11px 13px;font-size:11px;color:var(--mu);cursor:pointer;font-family:var(--fm);white-space:nowrap;min-width:90px;text-align:center}
+
+/* INPUT SECTION */
+.isec{padding:14px 20px}
+.ninp{width:100%;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;color:var(--tx);font-family:var(--fh);font-size:14px;outline:none}
+.ninp:focus{border-color:var(--grn)}
+.ninp::placeholder{color:var(--mu)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chip{background:var(--s2);border:1px solid var(--bd);border-radius:20px;padding:6px 12px;font-size:11px;color:var(--mu);cursor:pointer;font-family:var(--fm);min-height:32px;display:flex;align-items:center}
+.chip:active{border-color:var(--grn);color:var(--grn)}
+.gbtn{width:100%;margin-top:12px;background:var(--grn);color:#0a0a0f;border:none;border-radius:10px;padding:14px;font-family:var(--fh);font-size:14px;font-weight:700;cursor:pointer;min-height:48px}
+.gbtn:disabled{opacity:.5;cursor:not-allowed}
+
+/* PIPELINE */
+.pipe{padding:12px 20px;display:flex;flex-direction:column;gap:6px}
+.prow{background:var(--s1);border:1px solid var(--bd);border-radius:10px;display:flex;align-items:center;gap:9px;padding:10px 12px}
+.pico{font-size:14px;flex-shrink:0}
+.ptxt{font-size:12px;font-weight:600;flex:1}
+.pst{font-size:10px;font-family:var(--fm);padding:2px 7px;border-radius:4px}
+.sw{color:var(--mu);background:rgba(107,107,128,.1);border:1px solid var(--bd)}
+.sr{color:var(--yel);background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3)}
+.sd{color:var(--grn);background:rgba(127,255,110,.1);border:1px solid rgba(127,255,110,.3)}
+.se{color:var(--pnk);background:rgba(255,110,155,.1);border:1px solid rgba(255,110,155,.3)}
+
+/* RESULT TABS */
+.rtabs{display:flex;gap:3px;padding:12px 20px 0;border-bottom:1px solid var(--bd);overflow-x:auto;scrollbar-width:none}
+.rtabs::-webkit-scrollbar{display:none}
+.rtab{padding:7px 12px;border-radius:8px 8px 0 0;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;border:1px solid transparent;border-bottom:none;color:var(--mu);background:none;font-family:var(--fh)}
+.rtab.on{background:var(--s2);border-color:var(--bd);color:var(--tx)}
+.rbody{padding:14px 20px}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:12px;margin-bottom:8px}
+.clbl{font-size:10px;font-family:var(--fm);color:var(--mu);letter-spacing:1px;margin-bottom:4px}
+.cv{font-size:13px;line-height:1.55}
+.big{font-size:15px;font-weight:700;color:var(--grn)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
+.sec{font-size:10px;font-family:var(--fm);color:var(--mu);letter-spacing:2px;text-transform:uppercase;margin:12px 0 8px}
+.tag{display:inline-block;background:rgba(127,255,110,.08);border:1px solid rgba(127,255,110,.25);color:var(--grn);border-radius:4px;padding:2px 7px;font-size:11px;font-family:var(--fm);margin:2px}
+.bl{list-style:none}
+.bl li{padding:5px 0;border-bottom:1px solid var(--bd);font-size:13px;display:flex;gap:7px;align-items:flex-start}
+.bl li:before{content:'✓';color:var(--grn);flex-shrink:0}
+.bl li:last-child{border-bottom:none}
+.chap{background:var(--s2);border-radius:8px;padding:9px;margin-bottom:6px}
+.ct{font-size:13px;font-weight:600;margin-bottom:2px}
+.cc{font-size:12px;color:var(--mu);line-height:1.5}
+
+/* VIDEO CARDS */
+.vc{background:var(--s1);border:1px solid var(--bd);border-radius:11px;margin-bottom:8px;overflow:hidden}
+.vh{display:flex;align-items:center;padding:11px 13px;border-bottom:1px solid var(--bd);cursor:pointer;min-height:48px}
+.vnum{font-size:10px;font-family:var(--fm);color:var(--grn);margin-right:9px;flex-shrink:0}
+.vhook{font-size:13px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.varr{color:var(--mu);font-size:11px;transition:transform .2s;flex-shrink:0}
+.varr.open{transform:rotate(180deg)}
+.vbody{padding:12px;display:none}
+.vbody.open{display:block}
+.sb{background:var(--s2);border-radius:7px;padding:9px;margin-bottom:6px}
+.sl{font-size:10px;font-family:var(--fm);color:var(--mu);letter-spacing:1px;margin-bottom:3px}
+.st{font-size:13px;line-height:1.6}
+
+/* BLACK SCREEN PREVIEW */
+.bsp{background:#000;border-radius:8px;padding:20px;margin:10px 0;text-align:center;aspect-ratio:9/16;max-height:300px;display:flex;flex-direction:column;justify-content:space-between;align-items:center}
+.bsp-hook{font-size:16px;font-weight:800;color:#fff;line-height:1.3;text-align:center}
+.bsp-vo{font-size:12px;color:rgba(255,255,255,.8);line-height:1.6;text-align:center}
+.bsp-cta{font-size:13px;font-weight:700;color:var(--grn);text-align:center}
+.music-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mchip{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--blu);cursor:pointer;font-family:var(--fm)}
+.music-tip{font-size:11px;color:var(--mu);font-family:var(--fm);margin-top:6px;line-height:1.5;background:var(--s2);padding:8px;border-radius:6px}
+
+/* DM CARDS */
+.dm{background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:12px;margin-bottom:7px;position:relative;overflow:hidden}
+.dm:before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blu)}
+.dm.obj:before{background:var(--pnk)}
+.dm.fup:before{background:var(--grn)}
+
+/* PRODUCT BUILDER */
+.pbtool{padding:14px 20px}
+.fmts{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.fmt{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:8px 14px;font-size:12px;font-family:var(--fm);color:var(--mu);cursor:pointer;min-height:36px;display:flex;align-items:center}
+.fmt.on{border-color:var(--blu);color:var(--blu);background:rgba(110,143,255,.08)}
+.finp{width:100%;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:11px 13px;color:var(--tx);font-family:var(--fm);font-size:12px;outline:none;resize:vertical;min-height:110px;line-height:1.5}
+.finp:focus{border-color:var(--blu)}
+.finp::placeholder{color:var(--mu)}
+.fbtn{width:100%;margin-top:11px;background:var(--blu);color:#fff;border:none;border-radius:10px;padding:13px;font-family:var(--fh);font-size:14px;font-weight:700;cursor:pointer;min-height:48px}
+.fbtn:disabled{opacity:.5;cursor:not-allowed}
+.sc{background:var(--s2);border-radius:9px;padding:12px;margin-bottom:10px;border-left:3px solid var(--blu)}
+.sh{font-size:13px;font-weight:700;margin-bottom:6px}
+.sbody{font-size:13px;line-height:1.7;white-space:pre-wrap}
+
+/* COPY BTN */
+.cpb{display:inline-flex;align-items:center;gap:4px;background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--mu);cursor:pointer;font-family:var(--fm);margin-top:7px;min-height:32px}
+.cpb.ok{border-color:var(--grn);color:var(--grn)}
+
+/* ERR / EMPTY */
+.err{margin:0 20px 9px;padding:12px;background:rgba(255,110,155,.08);border:1px solid rgba(255,110,155,.3);border-radius:9px;color:var(--pnk);font-size:13px;line-height:1.5}
+.empty{text-align:center;padding:36px 20px;color:var(--mu)}
+.ei{font-size:32px;margin-bottom:9px}
+.et{font-size:13px;line-height:1.9}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="badge"><span class="dot"></span> AMO v9</div>
+    <h1>Business <span>Factory</span></h1>
+    <div class="sub">produk · video · DM · ebook — Groq gratis</div>
+  </div>
+
+  <!-- MAIN TABS -->
+  <div class="mtabs">
+    <div class="mtab on" id="mtab-content" onclick="switchMain('content')">🚀 Content Generator</div>
+    <div class="mtab" id="mtab-builder" onclick="switchMain('builder')">📦 Product Builder</div>
+  </div>
+
+  <!-- ══════════════ TOOL 1: CONTENT GENERATOR ══════════════ -->
+  <div id="tool-content">
+
+    <!-- API KEY -->
+    <div class="ksec">
+      <div class="lbl">GROQ API KEY</div>
+      <div class="kinfo">
+        Gratis di <a href="https://console.groq.com/keys" target="_blank">console.groq.com</a> → Sign up Google → Create Key → paste di sini.<br/>
+        Tidak perlu kartu kredit. Gratis selamanya.
+      </div>
+      <div class="krow">
+        <input class="kinp" id="apiKey" type="password" placeholder="gsk_..."/>
+        <button class="kbtn" onclick="toggleKey()">👁 Tampilkan</button>
+      </div>
+    </div>
+
+    <!-- NICHE INPUT -->
+    <div class="isec">
+      <div class="lbl">NICHE / PASAR TARGET</div>
+      <input class="ninp" id="nicheInp" placeholder="contoh: AI tools untuk pemula Indonesia"/>
+      <div class="chips">
+        <span class="chip" onclick="setNiche('AI tools HP')">AI tools HP</span>
+        <span class="chip" onclick="setNiche('Crypto pemula')">Crypto pemula</span>
+        <span class="chip" onclick="setNiche('Side hustle pelajar')">Side hustle pelajar</span>
+        <span class="chip" onclick="setNiche('UMKM digital')">UMKM digital</span>
+        <span class="chip" onclick="setNiche('Motivasi uang')">Motivasi uang</span>
+      </div>
+      <button class="gbtn" id="genBtn" onclick="generate()">⚡ Generate Business Pack</button>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="pipe hidden" id="pipeline">
+      <div class="prow"><span class="pico">📦</span><span class="ptxt">Produk + Sales Page</span><span class="pst sw" id="st1">Menunggu</span></div>
+      <div class="prow"><span class="pico">🎬</span><span class="ptxt">5 Video Script</span><span class="pst sw" id="st2">Menunggu</span></div>
+      <div class="prow"><span class="pico">💬</span><span class="ptxt">DM Closing System</span><span class="pst sw" id="st3">Menunggu</span></div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="err hidden" id="errBox"></div>
+
+    <!-- RESULT AREA -->
+    <div class="hidden" id="resultArea">
+      <div class="rtabs">
+        <button class="rtab on" id="rt-product" onclick="switchResult('product')">📦 Produk</button>
+        <button class="rtab" id="rt-video" onclick="switchResult('video')">🎬 Video</button>
+        <button class="rtab" id="rt-dm" onclick="switchResult('dm')">💬 DM</button>
+      </div>
+      <div class="rbody">
+        <div id="tab-product"></div>
+        <div id="tab-video" class="hidden"></div>
+        <div id="tab-dm" class="hidden"></div>
+      </div>
+    </div>
+
+    <!-- EMPTY -->
+    <div class="empty" id="emptyState">
+      <div class="ei">⚡</div>
+      <div class="et">
+        1. Daftar di <strong>console.groq.com</strong><br/>
+        2. Dapat API key gratis (30 detik)<br/>
+        3. Paste key → ketik niche → Generate<br/><br/>
+        <span style="color:var(--grn)">100% Gratis · Tidak perlu kartu kredit</span>
+      </div>
+    </div>
+
+  </div><!-- end tool-content -->
+
+  <!-- ══════════════ TOOL 2: PRODUCT BUILDER ══════════════ -->
+  <div id="tool-builder" class="hidden">
+
+    <div class="ksec">
+      <div class="lbl">GROQ API KEY</div>
+      <div class="kinfo">Gunakan key yang sama dengan Content Generator.</div>
+      <div class="krow">
+        <input class="kinp" id="apiKey2" type="password" placeholder="gsk_..."/>
+        <button class="kbtn" onclick="toggleKey2()">👁 Tampilkan</button>
+      </div>
+    </div>
+
+    <div class="pbtool">
+      <div class="sec">Format Produk</div>
+      <div class="fmts">
+        <span class="fmt on" onclick="selFmt(this,'Ebook')">📖 Ebook</span>
+        <span class="fmt" onclick="selFmt(this,'Prompt Pack')">🤖 Prompt Pack</span>
+        <span class="fmt" onclick="selFmt(this,'Template')">📝 Template</span>
+        <span class="fmt" onclick="selFmt(this,'Checklist')">✅ Checklist</span>
+      </div>
+
+      <div class="sec">Paste Data Produk dari Content Generator</div>
+      <textarea class="finp" id="productInput" placeholder="Paste nama produk, bab-bab, target audience, pain point dari tab Produk di Content Generator..."></textarea>
+      <button class="fbtn" id="buildBtn" onclick="buildProduct()">✍ Tulis Isi Produk Lengkap</button>
+
+      <div class="err hidden" id="buildErr"></div>
+      <div id="buildResult"></div>
+    </div>
+
+  </div><!-- end tool-builder -->
+
+</div><!-- end app -->
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let currentMain = 'content';
+let currentResult = 'product';
+let currentFmt = 'Ebook';
+let resultData = {};
+let isGenerating = false;
+let isBuilding = false;
+
+// ─── GROQ API ─────────────────────────────────────────────────────────────────
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function callGroq(prompt, keyId) {
+  const key = document.getElementById(keyId||'apiKey').value.trim();
+  if (!key) throw new Error('Masukkan API key Groq dulu');
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + key
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 2000,
+        temperature: 0.7,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (res.status === 401) throw new Error('API key salah — cek di console.groq.com/keys');
+    if (res.status === 429) {
+      if (attempt === 3) throw new Error('Rate limit — tunggu 1 menit lalu coba lagi');
+      await sleep(attempt * 10000);
+      continue;
+    }
+    if (!res.ok) throw new Error('Error ' + res.status + ' — coba lagi');
+
+    const json = await res.json();
+    const text = json.choices?.[0]?.message?.content || '';
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Format output tidak valid — coba lagi');
+
+    let s = match[0].replace(/,\s*([}\]])/g, '$1');
+    try { return JSON.parse(s); } catch(_) {}
+
+    // repair JSON
+    const opens = [];
+    for (const c of s) {
+      if (c==='{' || c==='[') opens.push(c==='{'?'}':']');
+      else if (c==='}' || c===']') opens.pop();
+    }
+    let r = s.trimEnd();
+    if ((r.match(/"/g)||[]).length%2!==0) r+='"';
+    r = r.replace(/,\s*$/,'') + opens.reverse().join('');
+    try { return JSON.parse(r); } catch(_) {}
+    throw new Error('Format error — coba lagi');
+  }
+}
+
+// ─── MAIN TAB SWITCH ─────────────────────────────────────────────────────────
+function switchMain(tab) {
+  currentMain = tab;
+  document.getElementById('mtab-content').classList.toggle('on', tab==='content');
+  document.getElementById('mtab-builder').classList.toggle('on', tab==='builder');
+  document.getElementById('tool-content').classList.toggle('hidden', tab!=='content');
+  document.getElementById('tool-builder').classList.toggle('hidden', tab!=='builder');
+  // sync api key
+  if (tab==='builder') {
+    const k = document.getElementById('apiKey').value;
+    if (k) document.getElementById('apiKey2').value = k;
+  }
+}
+
+// ─── RESULT TAB SWITCH ───────────────────────────────────────────────────────
+function switchResult(tab) {
+  currentResult = tab;
+  ['product','video','dm'].forEach(t => {
+    document.getElementById('rt-'+t).classList.toggle('on', t===tab);
+    document.getElementById('tab-'+t).classList.toggle('hidden', t!==tab);
+  });
+}
+
+// ─── KEY TOGGLE ──────────────────────────────────────────────────────────────
+function toggleKey() {
+  const inp = document.getElementById('apiKey');
+  const btn = inp.nextElementSibling;
+  if (inp.type==='password') { inp.type='text'; btn.textContent='🙈 Sembunyikan'; }
+  else { inp.type='password'; btn.textContent='👁 Tampilkan'; }
+}
+function toggleKey2() {
+  const inp = document.getElementById('apiKey2');
+  const btn = inp.nextElementSibling;
+  if (inp.type==='password') { inp.type='text'; btn.textContent='🙈 Sembunyikan'; }
+  else { inp.type='password'; btn.textContent='👁 Tampilkan'; }
+}
+
+// ─── NICHE CHIP ──────────────────────────────────────────────────────────────
+function setNiche(val) {
+  document.getElementById('nicheInp').value = val;
+}
+
+// ─── STATUS ──────────────────────────────────────────────────────────────────
+function setSt(id, s) {
+  const el = document.getElementById(id);
+  const map = {w:['Menunggu','sw'],r:['Generating...','sr'],d:['Selesai ✓','sd'],e:['Error','se']};
+  el.textContent = map[s][0];
+  el.className = 'pst ' + map[s][1];
+}
+
+function showErr(msg) {
+  const el = document.getElementById('errBox');
+  el.textContent = '⚠ ' + msg;
+  el.classList.remove('hidden');
+}
+function hideErr() { document.getElementById('errBox').classList.add('hidden'); }
+
+// ─── COPY ────────────────────────────────────────────────────────────────────
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Tersalin!';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('ok'); }, 2000);
+  });
+}
+function mkCp(text) {
+  const escaped = text.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');
+  return `<button class="cpb" onclick="copyText(\`${escaped}\`,this)">⧉ Copy</button>`;
+}
+
+// ─── GENERATE ────────────────────────────────────────────────────────────────
+async function generate() {
+  const niche = document.getElementById('nicheInp').value.trim();
+  const key = document.getElementById('apiKey').value.trim();
+  if (!niche) { showErr('Masukkan niche dulu'); return; }
+  if (!key) { showErr('Masukkan API key Groq dulu'); return; }
+  if (isGenerating) return;
+
+  isGenerating = true;
+  hideErr();
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('genBtn').textContent = '⚙ Generating...';
+  document.getElementById('pipeline').classList.remove('hidden');
+  document.getElementById('emptyState').classList.add('hidden');
+  document.getElementById('resultArea').classList.add('hidden');
+
+  setSt('st1','r'); setSt('st2','w'); setSt('st3','w');
+
+  try {
+    // CALL 1 — Product
+    const pd = await callGroq(
+      `Buat struktur produk digital untuk niche "${niche}" pasar Indonesia. JSON only, no markdown: {"product":{"name":"","tagline":"","audience":"","pain":"","price":"Rp XX.000","chapters":[{"title":"","content":""}],"bonus":["","",""],"urgency":""},"salesPage":{"headline":"","subheadline":"","problem":"","solution":"","benefits":["","","","",""],"cta":""}} 5 chapters. Harga Rp 27.000-197.000. Bahasa Indonesia.`
+    );
+    setSt('st1','d');
+    await sleep(2500);
+
+    // CALL 2 — Videos
+    setSt('st2','r');
+    const vd = await callGroq(
+      `Buat 5 script video TikTok/Reels untuk niche "${niche}" pasar Indonesia. JSON only: {"videos":[{"id":1,"hook":"","voiceover":"","onScreen":["","",""],"cta":"","caption":"","hashtags":""}]} Max 2 kalimat voiceover. Fokus jualan. Bahasa Indonesia.`
+    );
+    setSt('st2','d');
+    await sleep(2500);
+
+    // CALL 3 — DM
+    setSt('st3','r');
+    const dd = await callGroq(
+      `Buat script DM WhatsApp untuk jualan digital niche "${niche}". JSON only: {"dmScripts":{"opener":"","qualify":"","pain":"","offer":"","objections":{"expensive":"","unsure":"","later":""},"close":"","followUp":{"day1":"","day3":"","day7":""}}} Bahasa Indonesia natural tidak kaku.`
+    );
+    setSt('st3','d');
+
+    resultData = {...pd,...vd,...dd};
+    renderResults(niche);
+
+    document.getElementById('resultArea').classList.remove('hidden');
+    switchResult('product');
+
+  } catch(e) {
+    showErr(e.message || 'Terjadi error. Coba lagi.');
+    ['st1','st2','st3'].forEach(id => {
+      if (document.getElementById(id).textContent === 'Generating...') setSt(id,'e');
+    });
+  }
+
+  isGenerating = false;
+  document.getElementById('genBtn').disabled = false;
+  document.getElementById('genBtn').textContent = '⚡ Generate Business Pack';
+}
+
+// ─── RENDER RESULTS ──────────────────────────────────────────────────────────
+function renderResults(niche) {
+  const p = resultData.product;
+  const sp = resultData.salesPage;
+  const vs = resultData.videos || [];
+  const dm = resultData.dmScripts;
+
+  // TAB PRODUK
+  let html = '';
+  if (p) {
+    html += `<div class="sec">Produk Digital</div>
+    <div class="card"><div class="clbl">NAMA PRODUK</div><div class="cv big">${p.name||''}</div><div class="cv" style="color:var(--mu);margin-top:3px;font-size:12px">${p.tagline||''}</div></div>
+    <div class="g2">
+      <div class="card"><div class="clbl">TARGET</div><div class="cv">${p.audience||''}</div></div>
+      <div class="card"><div class="clbl">HARGA</div><div class="cv" style="font-weight:700;color:var(--grn)">${p.price||''}</div></div>
+    </div>
+    <div class="card"><div class="clbl">PAIN SOLVED</div><div class="cv">${p.pain||''}</div></div>
+    <div class="sec">Isi Produk</div>`;
+    (p.chapters||[]).forEach((c,i) => {
+      html += `<div class="chap"><div class="ct">Bab ${i+1}: ${c.title||''}</div><div class="cc">${c.content||''}</div></div>`;
+    });
+    html += `<div class="sec">Bonus</div><div style="margin-bottom:11px">`;
+    (p.bonus||[]).forEach(b => { html += `<span class="tag">🎁 ${b}</span>`; });
+    html += `</div><div class="card"><div class="clbl">URGENSI</div><div class="cv">${p.urgency||''}</div></div>`;
+  }
+  if (sp) {
+    html += `<div class="sec">Sales Page</div>
+    <div class="card"><div class="clbl">HEADLINE</div><div class="cv" style="font-size:15px;font-weight:700">${sp.headline||''}</div><div class="cv" style="font-size:12px;color:var(--mu);margin-top:3px">${sp.subheadline||''}</div></div>
+    <div class="card"><div class="clbl">PROBLEM</div><div class="cv">${sp.problem||''}</div></div>
+    <div class="card"><div class="clbl">SOLUSI</div><div class="cv">${sp.solution||''}</div></div>
+    <div class="card"><div class="clbl">BENEFIT</div><ul class="bl">`;
+    (sp.benefits||[]).forEach(b => { html += `<li>${b}</li>`; });
+    html += `</ul></div><div class="card" style="border-color:rgba(127,255,110,.3)"><div class="clbl">CTA</div><div class="cv" style="font-weight:700;color:var(--grn)">${sp.cta||''}</div></div>`;
+  }
+  document.getElementById('tab-product').innerHTML = html;
+
+  // TAB VIDEO
+  let vhtml = '<div class="sec">5 Video Script — Copy & Upload Langsung</div>';
+  vs.forEach((v, i) => {
+    const full = `HOOK:\n${v.hook}\n\nVOICEOVER:\n${v.voiceover}\n\nON SCREEN:\n${(v.onScreen||[]).join('\n')}\n\nCTA:\n${v.cta}\n\nCAPTION:\n${v.caption}\n\n${v.hashtags}`;
+    const os = (v.onScreen||[]).map(l=>`• ${l}`).join('<br>');
+    const vidId = 'vid-'+i;
+    const bspId = 'bsp-'+i;
+    vhtml += `
+    <div class="vc">
+      <div class="vh" onclick="toggleVid('${vidId}','${bspId}arr')">
+        <span class="vnum">#0${i+1}</span>
+        <span class="vhook">${v.hook||''}</span>
+        <span class="varr" id="${bspId}arr">▼</span>
+      </div>
+      <div class="vbody" id="${vidId}">
+        <div class="sb"><div class="sl">🎣 HOOK (0–3 dtk)</div><div class="st">${v.hook||''}</div></div>
+        <div class="sb"><div class="sl">🎙 VOICEOVER</div><div class="st">${v.voiceover||''}</div></div>
+        <div class="sb"><div class="sl">📺 ON SCREEN</div><div class="st">${os}</div></div>
+        <div class="sb"><div class="sl">📣 CTA</div><div class="st">${v.cta||''}</div></div>
+        <div class="sb"><div class="sl">📝 CAPTION</div><div class="st">${v.caption||''}<br><br><span style="color:var(--blu)">${v.hashtags||''}</span></div></div>
+        ${mkCp(full)}
+        <button class="cpb" style="margin-left:8px;border-color:var(--pnk);color:var(--pnk)" onclick="toggleBsp('bsp-${i}')">🎬 Preview Layar Hitam</button>
+        <div class="hidden" id="bsp-${i}">
+          <div class="bsp">
+            <div class="bsp-hook">${v.hook||''}</div>
+            <div class="bsp-vo">${v.voiceover||''}</div>
+            <div class="bsp-cta">${v.cta||''}</div>
+          </div>
+          <div class="sec">Saran Musik (Opsional)</div>
+          <div class="music-chips">
+            <span class="mchip" onclick="showMusicTip(this,'lo-fi chill background music no copyright')">🎵 Lo-fi Chill</span>
+            <span class="mchip" onclick="showMusicTip(this,'motivational background music no copyright')">🔥 Motivational</span>
+            <span class="mchip" onclick="showMusicTip(this,'viral trending background music tiktok 2025')">📈 Viral Trending</span>
+          </div>
+          <div class="music-tip hidden" id="mtip-${i}"></div>
+          <div class="sec">Cara Buat Video</div>
+          <div class="card" style="font-size:12px;color:var(--mu);line-height:1.7">
+            1. Buka CapCut → New Project<br>
+            2. Tambah video background hitam (5-15 detik)<br>
+            3. Tambah teks dari script di atas<br>
+            4. Tambah musik dari saran di atas<br>
+            5. Export → Upload TikTok/Reels/Shorts
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('tab-video').innerHTML = vhtml;
+
+  // TAB DM
+  let dhtml = '';
+  if (dm) {
+    dhtml += '<div class="sec">Alur DM Sales</div>';
+    [['💬 PEMBUKA (user ketik INFO)',dm.opener],['❓ KUALIFIKASI',dm.qualify],['💔 PAIN AMPLIFICATION',dm.pain],['🎁 OFFER',dm.offer]].forEach(([l,t]) => {
+      dhtml += `<div class="dm"><div class="clbl">${l}</div><div class="cv">${t||''}</div>${mkCp(t||'')}</div>`;
+    });
+    dhtml += `<div class="card" style="border-color:rgba(127,255,110,.3)"><div class="clbl">🔒 CLOSING</div><div class="cv" style="font-weight:600">${dm.close||''}</div>${mkCp(dm.close||'')}</div>`;
+    dhtml += '<div class="sec">Handle Objeksi</div>';
+    [['💸 Mahal',dm.objections?.expensive],['🤔 Belum Yakin',dm.objections?.unsure],['⏰ Nanti Dulu',dm.objections?.later]].forEach(([l,t]) => {
+      dhtml += `<div class="dm obj"><div class="clbl">${l}</div><div class="cv">${t||''}</div>${mkCp(t||'')}</div>`;
+    });
+    dhtml += '<div class="sec">Follow-Up Sequence</div>';
+    [['📅 Hari 1',dm.followUp?.day1],['📅 Hari 3',dm.followUp?.day3],['📅 Hari 7',dm.followUp?.day7]].forEach(([l,t]) => {
+      dhtml += `<div class="dm fup"><div class="clbl">${l}</div><div class="cv">${t||''}</div>${mkCp(t||'')}</div>`;
+    });
+  }
+  document.getElementById('tab-dm').innerHTML = dhtml;
+}
+
+function toggleVid(bodyId, arrId) {
+  const body = document.getElementById(bodyId);
+  const arr = document.getElementById(arrId);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  arr.classList.toggle('open', !isOpen);
+}
+
+function toggleBsp(id) {
+  document.getElementById(id).classList.toggle('hidden');
+}
+
+function showMusicTip(el, query) {
+  const vidIdx = el.closest('.vbody').id.replace('vid-','');
+  const tip = document.getElementById('mtip-'+vidIdx);
+  tip.innerHTML = `🔍 Cari di YouTube: <strong>"${query}"</strong><br>atau di TikTok sound library`;
+  tip.classList.remove('hidden');
+}
+
+// ─── FORMAT SELECTOR ────────────────────────────────────────────────────────
+function selFmt(el, fmt) {
+  currentFmt = fmt;
+  document.querySelectorAll('.fmt').forEach(e => e.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('buildBtn').textContent = '✍ Tulis Isi '+fmt+' Lengkap';
+}
+
+// ─── PRODUCT BUILDER ─────────────────────────────────────────────────────────
+async function buildProduct() {
+  const input = document.getElementById('productInput').value.trim();
+  const key2 = document.getElementById('apiKey2').value.trim();
+  const key1 = document.getElementById('apiKey').value.trim();
+  const key = key2 || key1;
+
+  const errEl = document.getElementById('buildErr');
+  if (!input) { errEl.textContent='⚠ Paste data produk dulu'; errEl.classList.remove('hidden'); return; }
+  if (!key) { errEl.textContent='⚠ Masukkan API key Groq dulu'; errEl.classList.remove('hidden'); return; }
+  if (isBuilding) return;
+
+  // sync key
+  if (!key2) document.getElementById('apiKey2').value = key;
+
+  isBuilding = true;
+  errEl.classList.add('hidden');
+  document.getElementById('buildBtn').disabled = true;
+  document.getElementById('buildBtn').textContent = '⚙ Menulis '+currentFmt+'...';
+  document.getElementById('buildResult').innerHTML = '';
+
+  try {
+    const prompt = `Tulis isi LENGKAP produk digital format ${currentFmt} dari data ini: ${input}. JSON only, no markdown: {"title":"","format":"${currentFmt}","intro":"","sections":[{"heading":"","body":""}],"bonusContent":"","closing":""} Min 4 sections. Isi DETAIL dan LENGKAP siap pakai. Bahasa Indonesia natural.`;
+
+    // Use key directly for product builder
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+key },
+      body: JSON.stringify({ model:'llama-3.3-70b-versatile', max_tokens:2500, temperature:0.7, messages:[{role:'user',content:prompt}] })
+    });
+    if (res.status===401) throw new Error('API key salah');
+    if (res.status===429) throw new Error('Rate limit — tunggu 1 menit');
+    if (!res.ok) throw new Error('Error '+res.status);
+
+    const json = await res.json();
+    const text = json.choices?.[0]?.message?.content||'';
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Format output tidak valid');
+
+    let s = match[0].replace(/,\s*([}\]])/g,'$1');
+    let r;
+    try { r = JSON.parse(s); } catch(_) {
+      const op=[];
+      for (const c of s){ if(c==='{'||c==='[') op.push(c==='{'?'}':']'); else if(c==='}'||c===']') op.pop(); }
+      let x=s.trimEnd();
+      if((x.match(/"/g)||[]).length%2!==0) x+='"';
+      x=x.replace(/,\s*$/,'')+op.reverse().join('');
+      r=JSON.parse(x);
+    }
+
+    let html = `
+      <div class="sec" style="margin-top:14px">Hasil — ${r.format||currentFmt}</div>
+      <div class="card"><div class="clbl">JUDUL</div><div class="cv" style="font-weight:700;font-size:14px">${r.title||''}</div></div>
+      <div class="card"><div class="clbl">INTRO</div><div class="cv" style="white-space:pre-wrap">${r.intro||''}</div>${mkCp(r.intro||'')}</div>`;
+    (r.sections||[]).forEach(s => {
+      html += `<div class="sc"><div class="sh">${s.heading||''}</div><div class="sbody">${s.body||''}</div>${mkCp((s.heading||'')+'\n\n'+(s.body||''))}</div>`;
+    });
+    if (r.bonusContent) html += `<div class="card" style="border-color:rgba(127,255,110,.3)"><div class="clbl">🎁 BONUS</div><div class="cv" style="white-space:pre-wrap">${r.bonusContent}</div>${mkCp(r.bonusContent)}</div>`;
+    html += `<div class="card"><div class="clbl">PENUTUP</div><div class="cv" style="white-space:pre-wrap">${r.closing||''}</div>${mkCp(r.closing||'')}</div>`;
+    
+    // Copy All button
+    const allText = `${r.title}\n\n${r.intro}\n\n${(r.sections||[]).map(s=>s.heading+'\n\n'+s.body).join('\n\n')}\n\n${r.bonusContent||''}\n\n${r.closing||''}`;
+    html += `<button class="gbtn" style="margin-top:12px" onclick="copyText(\`${allText.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$')}\`,this)">📋 Copy Semua Isi</button>`;
+
+    document.getElementById('buildResult').innerHTML = html;
+
+  } catch(e) {
+    errEl.textContent = '⚠ ' + (e.message||'Error. Coba lagi.');
+    errEl.classList.remove('hidden');
+  }
+
+  isBuilding = false;
+  document.getElementById('buildBtn').disabled = false;
+  document.getElementById('buildBtn').textContent = '✍ Tulis Isi '+currentFmt+' Lengkap';
+}
+</script>
+</body>
+</html>
